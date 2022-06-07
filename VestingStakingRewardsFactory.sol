@@ -4,6 +4,9 @@ import "./access/Ownable.sol";
 import "./VestingStakingRewards.sol";
 
 contract VestingStakingRewardsFactory is Ownable {
+    
+    using SafeERC20 for IERC20;
+
     // immutables
     address public rewardsToken;
     uint public stakingRewardsGenesis;
@@ -74,10 +77,7 @@ contract VestingStakingRewardsFactory is Ownable {
             uint rewardAmount = info.rewardAmount;
             info.rewardAmount = 0;
 
-            require(
-                IERC20(rewardsToken).transfer(info.stakingRewards, rewardAmount),
-                'VestingStakingRewardsFactory::notifyRewardAmount: transfer failed'
-            );
+            IERC20(rewardsToken).safeTransfer(info.stakingRewards, rewardAmount);
             VestingStakingRewards(info.stakingRewards).notifyRewardAmount(rewardAmount);
             emit RewardNotified(index, rewardAmount);
         }
@@ -92,10 +92,7 @@ contract VestingStakingRewardsFactory is Ownable {
         require(info.stakingRewards != address(0), 'VestingStakingRewardsFactory::extendStakingRewards: not deployed');
         require(info.rewardAmount == 0, 'VestingStakingRewardsFactory::extendStakingRewards: not started');
 
-        require(
-                IERC20(rewardsToken).transfer(info.stakingRewards, rewardAmount),
-                'VestingStakingRewardsFactory::extendStakingRewards: transfer failed'
-            );
+        IERC20(rewardsToken).safeTransfer(info.stakingRewards, rewardAmount);
         VestingStakingRewards(info.stakingRewards).notifyRewardAmount(rewardAmount);
         emit PoolExtended(index, rewardAmount);
     }

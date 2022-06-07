@@ -4,6 +4,9 @@ import "./access/Ownable.sol";
 import "./LockedStakingRewards.sol";
 
 contract LockedStakingRewardsFactory is Ownable {
+
+    using SafeERC20 for IERC20;
+
     // immutables
     address public rewardsToken;
     uint public stakingRewardsGenesis; 
@@ -70,10 +73,7 @@ contract LockedStakingRewardsFactory is Ownable {
             uint rewardAmount = info.rewardAmount;
             info.rewardAmount = 0;
 
-            require(
-                IERC20(rewardsToken).transfer(info.stakingRewards, rewardAmount),
-                'LockedStakingRewardsFactory::notifyRewardAmount: transfer failed'
-            );
+            IERC20(rewardsToken).safeTransfer(info.stakingRewards, rewardAmount);
             LockedStakingRewards(info.stakingRewards).notifyRewardAmount(rewardAmount);
             emit RewardNotified(index, rewardAmount);
         }
@@ -88,10 +88,7 @@ contract LockedStakingRewardsFactory is Ownable {
         require(info.stakingRewards != address(0), 'LockedStakingRewardsFactory::extendStakingRewards: not deployed');
         require(info.rewardAmount == 0, 'LockedStakingRewardsFactory::extendStakingRewards: not started');
 
-        require(
-                IERC20(rewardsToken).transfer(info.stakingRewards, rewardAmount),
-                'LockedStakingRewardsFactory::extendStakingRewards: transfer failed'
-            );
+        IERC20(rewardsToken).safeTransfer(info.stakingRewards, rewardAmount);
         LockedStakingRewards(info.stakingRewards).notifyRewardAmount(rewardAmount);
         emit PoolExtended(index, rewardAmount);
     }
