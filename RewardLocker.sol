@@ -91,7 +91,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
     for (uint256 i = 0; i < vest.length; i++) {
       VestingData memory eachVest = vest[i];
       if (block.timestamp < eachVest.endTimestamp) {
-        continue;
+        break;
       }
 
       uint256 vestQuantity = eachVest.amount.sub(eachVest.vestedAmount);
