@@ -84,7 +84,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
   /**
    * @dev Allow a user to claim all the ended vesting
    */
-  function claimAllEndedVesting() external {
+  function claimAllEndedVesting() external nonReentrant {
     VestingData[] storage vest = vestingList[msg.sender];
     uint256 totalVesting = 0;
 
@@ -113,7 +113,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
   /**
    * @dev Allow a user to claim all the available vested reward
    */
-  function claimAllVestedReward() external {
+  function claimAllVestedReward() external nonReentrant {
     VestingData[] storage vest = vestingList[msg.sender];
     uint256 totalVesting = 0;
 
@@ -146,7 +146,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
   /**
    * @dev Allow a user to claim reward with penalty
    */
-  function claimWithPenalty() external {
+  function claimWithPenalty() external nonReentrant {
     VestingData[] storage vest = vestingList[msg.sender];
     uint256 totalVesting = 0;
 
