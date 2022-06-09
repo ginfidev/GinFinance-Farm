@@ -96,6 +96,10 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
     function getReward() public nonReentrant updateReward(msg.sender) {
         uint256 reward = rewards[msg.sender];
         if (reward > 0) {
+            uint256 contractTokenBal = rewardsToken.balanceOf(address(this));
+            if (reward > contractTokenBal) {
+                reward = contractTokenBal;
+            }
             rewards[msg.sender] = 0;
             rewardsToken.safeTransfer(msg.sender, reward);
             emit RewardPaid(msg.sender, reward);
@@ -111,23 +115,13 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
 
     function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
 
-        uint256 newDuration = rewardsDuration;
-
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {
             uint256 remaining = periodFinish.sub(block.timestamp);
             uint256 leftover = remaining.mul(rewardRate);
-            newDuration = newDuration.add(remaining);
-            rewardRate = reward.add(leftover).div(newDuration);
+            rewardRate = reward.add(leftover).div(rewardsDuration.add(remaining));
         }
-
-        // Ensure the provided reward amount is not more than the balance in the contract.
-        // This keeps the reward rate in the right range, preventing overflows due to
-        // very high values of rewardRate in the earned and rewardsPerToken functions;
-        // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-        uint256 balance = rewardsToken.balanceOf(address(this));
-        require(rewardRate <= balance.div(newDuration), "Provided reward too high");
 
         lastUpdateTime = block.timestamp;
         
