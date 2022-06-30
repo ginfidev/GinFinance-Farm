@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "migrate": "truffle migrate --network boba_rinkeby"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.0.9",
+    "dotenv-flow": "^3.2.0",
+    "truffle": "^5.5.19"
+  }
+}

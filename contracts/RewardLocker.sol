@@ -46,7 +46,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
     stakeAddr = msg.sender;
     vestingDuration = _vestingDuration;
     uint256 hundred = 100;
-    penaltyPercentage = hundred.div(50);
+    penaltyPercentage = hundred.div(20);
     penaltyOwner = _penaltyOwner;
   }
 
@@ -168,7 +168,7 @@ contract RewardLocker is Ownable, ReentrancyGuard{
         continue;
       }
 
-      // 50% of the remaining reward
+      // 20% of the remaining reward
 
       uint256 remaining = eachVest.amount.sub(vest[i].vestedAmount);
       
